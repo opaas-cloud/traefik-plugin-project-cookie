@@ -78,9 +78,9 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	fmt.Println("URL")
 	fmt.Println(url)
 	fmt.Println("HOST")
-	fmt.Println(url.Host)
+	fmt.Println(url.Hostname())
 	//https://app-airoolite.opaas.online/
-	var split1 = strings.Split(url.Host, "-")
+	var split1 = strings.Split(url.Hostname(), "-")
 	fmt.Println("SPLIT 1")
 	for i := range split1 {
 		fmt.Println(split1[i])
