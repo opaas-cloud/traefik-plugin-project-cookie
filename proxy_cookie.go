@@ -110,7 +110,7 @@ func (r *responseWriter) WriteHeader(statusCode int) {
 		fmt.Println("project found")
 		r.writer.Header().Del(setCookieHeader)
 		expiration := time.Now().Add(24 * 7 * time.Hour)
-		cookie := http.Cookie{Name: "project", Value: project, Path: "/", HttpOnly: true, Expires: expiration, Domain: "keycloak.opaas.online"}
+		cookie := http.Cookie{Name: "project", Value: project, Path: "/", HttpOnly: true, Expires: expiration, Domain: ".opaas.online"}
 		http.SetCookie(r, &cookie)
 		project = ""
 	}
