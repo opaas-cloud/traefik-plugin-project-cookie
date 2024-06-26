@@ -1,0 +1,12 @@
+displayName: Project Cookie
+type: middleware
+import: github.com/opaas-cloud/traefik-plugin-project-cookie
+
+summary: 'Modify the domain or path of a cookie in the response.'
+
+testData:
+  domain:
+    rewrites:
+      - name: session_id
+        regex: ".opaas.online"
+        replacement: ".k3s-jm1221.opaas.online"
