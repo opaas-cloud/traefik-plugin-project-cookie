@@ -76,8 +76,12 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 	var url = req.URL
 	fmt.Println(url)
+	fmt.Println(url.Host)
 	//https://app-airoolite.opaas.online/
 	var split1 = strings.Split(url.Host, "-")
+	for i := range split1 {
+		fmt.Println(split1[i])
+	}
 	if len(split1) != 2 {
 		wrappedWriter := &responseWriter{
 			writer:   rw,
@@ -89,6 +93,9 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	var appSplit = split1[1]
 	fmt.Println(appSplit)
 	var split2 = strings.Split(appSplit, ".")
+	for i := range split2 {
+		fmt.Println(split2[i])
+	}
 	if len(split2) != 2 {
 		wrappedWriter := &responseWriter{
 			writer:   rw,
