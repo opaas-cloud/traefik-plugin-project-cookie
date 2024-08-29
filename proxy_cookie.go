@@ -67,8 +67,7 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			writer: rw,
 		}
 		r.next.ServeHTTP(wrappedWriter, req)
-	}
-	if req.Method == "POST" || req.Method == "OPTIONS" {
+	} else {
 		r.next.ServeHTTP(rw, req)
 	}
 }
