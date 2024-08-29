@@ -35,41 +35,20 @@ type rewrite struct {
 }
 
 type rewriteBody struct {
-	name     string
-	next     http.Handler
-	rewrites []rewrite
+	name string
+	next http.Handler
 }
 
 func New(_ context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	rewrites := make([]rewrite, len(config.Rewrites))
-
-	for i, rewriteConfig := range config.Rewrites {
-		regex, err := regexp.Compile(rewriteConfig.Regex)
-		if err != nil {
-			return nil, fmt.Errorf("error compiling regex %q: %w", rewriteConfig.Regex, err)
-		}
-
-		rewrites[i] = rewrite{
-			name:        rewriteConfig.Name,
-			regex:       regex,
-			replacement: rewriteConfig.Replacement,
-		}
-	}
-
 	return &rewriteBody{
-		name:     name,
-		next:     next,
-		rewrites: rewrites,
+		name: name,
+		next: next,
 	}, nil
 }
 
 var project = ""
 
 func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method == "POST" || req.Method == "OPTIONS" {
-		r.next.ServeHTTP(rw, req)
-	}
-
 	if req.Method == "GET" {
 		fmt.Println("HOST")
 		fmt.Println(req.Host)
@@ -84,17 +63,15 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			project = secondSplit[0]
 			fmt.Println(project)
 		}
+		r.next.ServeHTTP(rw, req)
 	}
-	wrappedWriter := &responseWriter{
-		writer:   rw,
-		rewrites: r.rewrites,
+	if req.Method == "POST" || req.Method == "OPTIONS" {
+		r.next.ServeHTTP(rw, req)
 	}
-	r.next.ServeHTTP(wrappedWriter, req)
 }
 
 type responseWriter struct {
-	writer   http.ResponseWriter
-	rewrites []rewrite
+	writer http.ResponseWriter
 }
 
 func (r *responseWriter) Header() http.Header {
