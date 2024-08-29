@@ -66,28 +66,29 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 var project = ""
 
 func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method == "POST" {
-		wrappedWriter := &responseWriter{
-			writer:   rw,
-			rewrites: r.rewrites,
-		}
-		r.next.ServeHTTP(wrappedWriter, req)
-		return
+	if req.Method == "POST" || req.Method == "OPTIONS" {
+		r.next.ServeHTTP(rw, req)
 	}
-	fmt.Println("HOST")
-	fmt.Println(req.Host)
-	var split1 = strings.Split(req.Host, "-")
 
-	var appSplit = split1[1]
-	fmt.Println(appSplit)
+	if req.Method == "GET" {
+		fmt.Println("HOST")
+		fmt.Println(req.Host)
+		if strings.Contains(req.Host, "app-") {
+			var split1 = strings.Split(req.Host, "-")
 
-	project = appSplit
-	fmt.Println(project)
+			var appSplit = split1[1]
+			fmt.Println(appSplit)
+
+			var secondSplit = strings.Split(appSplit, ".")
+
+			project = secondSplit[0]
+			fmt.Println(project)
+		}
+	}
 	wrappedWriter := &responseWriter{
 		writer:   rw,
 		rewrites: r.rewrites,
 	}
-
 	r.next.ServeHTTP(wrappedWriter, req)
 }
 
