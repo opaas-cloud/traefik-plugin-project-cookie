@@ -63,10 +63,7 @@ func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			project = secondSplit[0]
 			fmt.Println(project)
 		}
-		wrappedWriter := &responseWriter{
-			writer: rw,
-		}
-		r.next.ServeHTTP(wrappedWriter, req)
+		r.next.ServeHTTP(rw, req)
 	} else {
 		r.next.ServeHTTP(rw, req)
 	}
