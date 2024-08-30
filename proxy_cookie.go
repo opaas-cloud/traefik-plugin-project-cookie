@@ -49,7 +49,7 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 var project = ""
 
 func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method == "GET" && strings.Contains(req.Host, "app-") && !strings.Contains(req.URL.Path, "/accounts") {
+	if req.Method == "GET" && strings.Contains(req.Host, "app-") && (req.URL.Path == "/" || strings.Contains(req.URL.Path, "/project")) {
 		fmt.Println("HOST")
 		fmt.Println(req.Host)
 		var split1 = strings.Split(req.Host, "-")
