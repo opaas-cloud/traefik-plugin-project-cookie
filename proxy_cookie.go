@@ -49,25 +49,31 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 var project = ""
 
 func (r *rewriteBody) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Method == "GET" && strings.Contains(req.Host, "app-") && (req.URL.Path == "/" || strings.Contains(req.URL.Path, "/project")) {
-		fmt.Println("HOST")
-		fmt.Println(req.Host)
-		var split1 = strings.Split(req.Host, "-")
-
-		var appSplit = split1[1]
-		fmt.Println(appSplit)
-
-		var secondSplit = strings.Split(appSplit, ".")
-
-		project = secondSplit[0]
-		fmt.Println(project)
-
-		writer := &responseWriter{
-			writer: rw,
-		}
-		r.next.ServeHTTP(writer, req)
-	} else {
+	if req.Header.Get("Connection") == "Upgrade" && req.Header.Get("Upgrade") == "websocket" {
+		// Add or log custom behavior for WebSocket connections if needed
+		rw.Header().Set("X-WebSocket-Allowed", "true")
 		r.next.ServeHTTP(rw, req)
+	} else {
+		if req.Method == "GET" && strings.Contains(req.Host, "app-") && (req.URL.Path == "/" || strings.Contains(req.URL.Path, "/project")) {
+			fmt.Println("HOST")
+			fmt.Println(req.Host)
+			var split1 = strings.Split(req.Host, "-")
+
+			var appSplit = split1[1]
+			fmt.Println(appSplit)
+
+			var secondSplit = strings.Split(appSplit, ".")
+
+			project = secondSplit[0]
+			fmt.Println(project)
+
+			writer := &responseWriter{
+				writer: rw,
+			}
+			r.next.ServeHTTP(writer, req)
+		} else {
+			r.next.ServeHTTP(rw, req)
+		}
 	}
 }
 
